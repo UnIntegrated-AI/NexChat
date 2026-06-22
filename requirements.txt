@@ -1,0 +1,4 @@
+cryptography==49.0.0
+customtkinter==5.2.2
+mysql-connector-python==9.7.0
+Pillow==12.2.0
