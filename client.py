@@ -32,21 +32,21 @@ light_text = "#FFFFFF"
 less_light_text = "#C9D1D9"
 dark_text = "#111111"
 
-black = "#0D0E10"
-black_light_shade1 = "#161719"
-black_light_shade2 = "#1D1F21"
-black_light_shade3 = "#242728"
+black = "#2A2A2A"
+black_light_shade1 = "#333333"
+black_light_shade2 = "#414141"
+black_light_shade3 = "#555555"
 
-yellow = "#CD9A14"
-yellow_light_shade1 = "#F3C439"
-yellow_dark_shade1 = "#AF7D04"
-yellow_dark_shade2 = "#916503"
+yellow = "#DEDEDE"
+yellow_light_shade1 = "#F6F6F6"
+yellow_dark_shade1 = "#BABABA"
+yellow_dark_shade2 = "#979797"
 
 red = "#FF1E1E"
 red_light_shade = "#FF4545"
 
-sender_bubble = yellow_dark_shade1
-recv_bubble = black_light_shade3
+sender_bubble = yellow_light_shade1
+recv_bubble = yellow_dark_shade1
 
 # --------------------- * ---------------------
 
@@ -118,7 +118,7 @@ class App(ctk.CTk):
 
         self.title("NexChat")
         self.geometry("900x600")
-        self.minsize(950, 600)
+        self.minsize(900, 600)
         # self.after(0, lambda: self.state("zoomed"))
 
         self.grid_columnconfigure((0), weight=1)
@@ -312,6 +312,7 @@ class MainFrame(ctk.CTkFrame):
         self.pfp = None
 
         send_packet(client, {"type": "get_recent", "uid": self.uid})
+        send_packet(client, {"type":"get_pfp", "uid":self.uid})
 
         self.configure(fg_color=black, corner_radius=0)
 
@@ -319,12 +320,86 @@ class MainFrame(ctk.CTkFrame):
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=20)
 
-        self.udf = ctk.CTkFrame(
+        self.sidebar = ctk.CTkFrame(
             self, fg_color=black_light_shade1, corner_radius=0, width=320
         )
-        self.udf.grid(row=0, column=1, sticky="nswe")
+        self.sidebar.grid(row=0, column=0, sticky="nsew")
+        self.sidebar.grid_propagate(False)
 
-        self.udf.grid_propagate(False)
+        self.sidebar.grid_rowconfigure(0, weight=1)
+        self.sidebar.grid_rowconfigure((1), weight=5)
+        self.sidebar.grid_rowconfigure((2), weight=1)
+        self.sidebar.grid_columnconfigure(0, weight=1)
+
+        # Settings Frame
+
+        self.settingsf = ctk.CTkFrame(self.sidebar, fg_color=black_light_shade1, corner_radius=0, width=320)
+        self.settingsf.grid(row=0, column=1, sticky="nswe")
+        self.settingsf.grid_propagate(False)
+        self.settingsf.grid_forget()
+
+        self.sheading_panel = ctk.CTkFrame(
+            self.settingsf, fg_color=black_light_shade1, corner_radius=0
+        )
+        self.sheading_panel.grid(row=0, column=0, sticky="ew", pady=10, padx=20)
+
+        self.sheading_panel.grid_rowconfigure(0, weight=1)
+        self.sheading_panel.grid_columnconfigure((0), weight=10)
+        self.sheading_panel.grid_columnconfigure((1), weight=1)
+
+        self.sheading = ctk.CTkLabel(
+            self.sheading_panel, text_color=light_text, text="Settings", font=("Segoe UI", 25, "bold")
+        )
+        self.sheading.grid(row=0, column=0, sticky="w", pady=10, padx=20)
+
+        self.settings_btn = ctk.CTkButton(
+            self.sheading_panel,
+            text="<",
+            text_color=light_text,
+            # border_color=yellow_light_shade1,
+            # border_width=1,
+            corner_radius=15,
+            fg_color="transparent",
+            hover_color=black_light_shade2,
+            height=30,
+            width=30,
+            font=("Segoe UI", 25, "bold"),
+            command=lambda: self.settings(),
+        )
+        self.settings_btn.grid(row=0, column=1, sticky="nse")
+
+        self.spfp = ctk.CTkLabel(
+            self.settingsf,
+            fg_color="transparent",
+            text="",
+        )
+        self.spfp.grid(row=1, column=0, sticky="nsew", padx=25, pady=10)
+
+
+        self.set_pfp_btn = ctk.CTkButton(
+            self.settingsf,
+            text="Change pfp",
+            text_color=light_text,
+            # border_color=yellow_light_shade1,
+            # border_width=1,
+            corner_radius=15,
+            fg_color="transparent",
+            hover_color=black_light_shade2,
+            height=30,
+            width=30,
+            font=("Segoe UI", 25, "bold"),
+            command=lambda: self.get_pfp(),
+        )
+        self.set_pfp_btn.grid(row=2, column=0, sticky="ew")
+
+        # User Details Frame
+
+        self.udf = ctk.CTkFrame(
+            self.sidebar, fg_color=black_light_shade1, corner_radius=0, width=320
+        )
+        self.udf.grid(row=0, column=0, sticky="nswe")
+
+        # self.udf.grid_propagate(False)
 
         self.udf.grid_rowconfigure(0, weight=1)
         self.udf.grid_rowconfigure(1, weight=1)
@@ -332,10 +407,35 @@ class MainFrame(ctk.CTkFrame):
         self.udf.grid_rowconfigure(3, weight=1)
         self.udf.grid_columnconfigure(0, weight=1)
 
+        self.heading_panel = ctk.CTkFrame(
+            self.udf, fg_color=black_light_shade1, corner_radius=0
+        )
+        self.heading_panel.grid(row=0, column=0, sticky="ew", pady=10, padx=20)
+
+        self.heading_panel.grid_rowconfigure(0, weight=1)
+        self.heading_panel.grid_columnconfigure((0), weight=10)
+        self.heading_panel.grid_columnconfigure((1), weight=10)
+
         self.chats_heading = ctk.CTkLabel(
-            self.udf, text_color=light_text, text="Chats", font=("Segoe UI", 25, "bold")
+            self.heading_panel, text_color=light_text, text="Chats", font=("Segoe UI", 25, "bold")
         )
         self.chats_heading.grid(row=0, column=0, sticky="w", pady=10, padx=20)
+
+        self.settings_btn = ctk.CTkButton(
+            self.heading_panel,
+            text="⋮",
+            text_color=light_text,
+            # border_color=yellow_light_shade1,
+            # border_width=1,
+            corner_radius=15,
+            fg_color="transparent",
+            hover_color=black_light_shade2,
+            height=30,
+            width=30,
+            font=("Segoe UI", 25, "bold"),
+            command=lambda: self.settings(),
+        )
+        self.settings_btn.grid(row=0, column=1, sticky="nse")
 
         self.search_panel = ctk.CTkFrame(
             self.udf, fg_color=black_light_shade1, corner_radius=0
@@ -408,11 +508,18 @@ class MainFrame(ctk.CTkFrame):
         self.chatf.grid_rowconfigure(2, weight=2)
 
         self.header = ctk.CTkFrame(self.chatf, fg_color=black_light_shade1, corner_radius=12)
-        self.header.grid(row=0, column=0, sticky="ew", padx=10)
+        self.header.grid(row=0, column=0, sticky="ew", padx=25)
 
-        self.chatf.grid_columnconfigure((0), weight=10)
-        self.chatf.grid_columnconfigure((1,2), weight=1)
-        self.chatf.grid_rowconfigure(0, weight=1)
+        self.header.grid_columnconfigure((0), weight=5)
+        self.header.grid_columnconfigure((1), weight=10)
+        self.header.grid_rowconfigure(0, weight=1)
+
+        self.pfp = ctk.CTkLabel(
+            self.header,
+            fg_color="transparent",
+            text="",
+        )
+        self.pfp.grid(row=0, column=0, sticky="nsw", padx=25, pady=10)
 
         self.recv_name = ctk.CTkLabel(
             self.header,
@@ -421,7 +528,7 @@ class MainFrame(ctk.CTkFrame):
             font=("Segoe UI", 22, "bold"),
             text_color=light_text,
         )
-        self.recv_name.grid(row=0, column=0, sticky="nsw", padx=25, pady=10)
+        self.recv_name.grid(row=0, column=1, sticky="nsw", padx=25, pady=10)
 
         self.chat_area = ctk.CTkScrollableFrame(
             self.chatf, fg_color=black_light_shade2, corner_radius=12
@@ -484,6 +591,66 @@ class MainFrame(ctk.CTkFrame):
 
         recv_thread = threading.Thread(target=lambda: self.recv(), daemon=True)
         recv_thread.start()
+
+    def settings(self):
+        if self.udf.winfo_ismapped():
+            self.udf.grid_forget()
+            self.settingsf.grid(row=0, column=0, sticky="nswe")
+        else:
+            self.settingsf.grid_forget()
+            self.udf.grid(row=0, column=0, sticky="nswe")
+        
+        # print("Inside Settings")
+
+    def display_pfp(self, path):
+        img = Image.open(path)
+        img.thumbnail((40,40))
+
+        photo = ctk.CTkImage(
+            light_image=img,
+            dark_image=img,
+            size=(40,40)
+        )
+
+        self.pfp.configure(image=photo)
+        self.pfp.image = photo
+
+
+    def get_pfp(self):
+        path = filedialog.askopenfilename(
+            filetypes={
+                ("Images", "*.png *.jpg *.jpeg *.gif")
+            }
+        )
+        if path:
+            self.set_pfp(path)
+
+    def set_pfp(self, path):
+        img = Image.open(path)
+        img.thumbnail((40,40))
+
+        photo = ctk.CTkImage(
+            light_image=img,
+            dark_image=img,
+            size=(100,100)
+        )
+
+        self.spfp.configure(image=photo)
+        self.spfp.image = photo
+
+        with open(path, "rb") as file:
+            img_data = file.read()
+
+        img_b64 = base64.b64encode(img_data).decode()
+
+        img_packet = {
+            "type": "set_pfp",
+            "rid": self.recv_id,
+            "name": os.path.basename(path),
+            "data": img_b64
+        }
+
+        send_packet(client, img_packet)
 
     def get_img(self):
         path = filedialog.askopenfilename(
@@ -617,7 +784,7 @@ class MainFrame(ctk.CTkFrame):
                 bubble,
                 text=message,
                 font=("Segoe UI", 16),
-                text_color=light_text,
+                text_color=dark_text,
                 wraplength=450,
                 anchor="e",
             )
@@ -629,7 +796,7 @@ class MainFrame(ctk.CTkFrame):
                 bubble,
                 text=message,
                 font=("Segoe UI", 16),
-                text_color=light_text,
+                text_color=dark_text,
                 wraplength=450,
                 anchor="w",
             )
@@ -743,6 +910,9 @@ class MainFrame(ctk.CTkFrame):
                         lambda sid=sender_id, path=image_path:
                         self.show_live_image(sid, path)
                     )
+                elif packet_type == "pfp":
+                    path = packet["path"]
+                    self.set_pfp(path)
                 elif packet_type == "user_found":
                     self.after(
                         0, lambda p=packet: self.add_chat_btn(p["uid"], p["uname"])
