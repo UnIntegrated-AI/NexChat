@@ -35,19 +35,23 @@ os.makedirs(UPLOADS_DIR, exist_ok=True)
 
 # --------------------- Encyption Functions ---------------------
 
+
 def hashpass(passwd):
     return hashlib.sha256(passwd.encode()).hexdigest()
 
 
-KEY = b'PlMbY4lcDAqHrVUWAcZJ_vdTftOSSR1SOm_Ugt3EusE='
+KEY = b"PlMbY4lcDAqHrVUWAcZJ_vdTftOSSR1SOm_Ugt3EusE="
+
 
 def encrypt_msg(msg):
     fernet = Fernet(KEY)
     return fernet.encrypt(msg.encode()).decode()
 
+
 def decrypt_msg(msg):
     fernet = Fernet(KEY)
     return fernet.decrypt(msg.encode()).decode()
+
 
 # --------------------- * ---------------------
 
@@ -91,11 +95,7 @@ def recv_packet(sock):
 
 # --------------------- MySQL Functions ---------------------
 
-conn = mysql.connector.connect(
-    host=HOST,
-    user="root",
-    password="root"  
-)
+conn = mysql.connector.connect(host=HOST, user="root", password="root")
 
 cursor = conn.cursor(buffered=True)
 
@@ -104,12 +104,13 @@ cursor.execute("create database if not exists NexChat")
 cursor.execute("use NexChat")
 
 cursor.execute(
-    "create table if not exists users(uid int auto_increment primary key, uname varchar(50) unique not null, passwd text not null, pfp varchar(255) not null default \"pfps/default.png\")"
+    'create table if not exists users(uid int auto_increment primary key, uname varchar(50) unique not null, passwd text not null, pfp varchar(255) not null default "pfps/default.png")'
 )
 
 cursor.execute(
     "create table if not exists msgs(cid int auto_increment primary key, sid int not null, rid int not null, msg text not null, timestamp datetime default current_timestamp, type text not null)"
 )
+
 
 def create_user(uname, passwd):
     cursor.execute("insert into users(uname, passwd) values(%s, %s)", (uname, passwd))
@@ -145,7 +146,12 @@ def get_recent_chats(uid):
     for sid, rid, msg, timestamp, type in rows:
         other = rid if sid == uid else sid
         if other not in chats:
-            chats[other] = {"uid": other, "last_msg": msg, "timestamp": str(timestamp), "msg_type":type}
+            chats[other] = {
+                "uid": other,
+                "last_msg": msg,
+                "timestamp": str(timestamp),
+                "msg_type": type,
+            }
         for chat in chats.values():
             chat["uname"] = get_username(chat["uid"])
     return list(chats.values())
@@ -161,7 +167,8 @@ def get_username(uid):
 
 def save_msg(sid, rid, msg, type):
     cursor.execute(
-        "insert into msgs(sid, rid, msg, type) values(%s, %s, %s, %s)", (sid, rid, msg, type)
+        "insert into msgs(sid, rid, msg, type) values(%s, %s, %s, %s)",
+        (sid, rid, msg, type),
     )
     conn.commit()
 
@@ -217,8 +224,9 @@ def save_img(uid, rid, name, img_b64):
 
     return save_path
 
-def save_pfp(uid, name, img_b64):
-    filename = f"{uid}-{name}"
+
+def save_pfp(uid, img_b64):
+    filename = f"pfp_{uid}.png"
     save_path = os.path.join("pfps", filename)
     bimg = base64.b64decode(img_b64)
 
@@ -227,17 +235,21 @@ def save_pfp(uid, name, img_b64):
 
     return save_path
 
+
 def save_pfp_path(uid, path):
-    cursor.execute("update users set pfp_path = %s where uid = %s",(path,uid))
+    cursor.execute("update users set pfp = %s where uid = %s", (path, uid))
     conn.commit()
 
+
 def get_pfp_path(uid):
-    cursor.execute("select pfp from users where uid = %s",(uid,))
-    return cursor.fetchone()
+    cursor.execute("select pfp from users where uid = %s", (uid,))
+    return cursor.fetchone()[0]
+
 
 def check_name(uname):
-    cursor.execute("select uname from users where uname = %s",(uname,))
+    cursor.execute("select uname from users where uname = %s", (uname,))
     return cursor.fetchone()
+
 
 # --------------------- * ---------------------
 
@@ -268,19 +280,14 @@ def handle(client, uid):
             elif packet_type == "img":
                 print("Image received!")
                 path = save_img(uid, rid, packet["name"], packet["data"])
-                save_msg(uid,rid,path,"image")
+                save_msg(uid, rid, path, "image")
                 log(uid, f"Image sent to: {rid} is Saved")
                 rid = packet["rid"]
                 recv_socket = get_client_by_uid(rid)
 
                 if recv_socket:
                     send_packet(
-                        recv_socket,
-                        {
-                            "type": "image",
-                            "sid": uid,
-                            "path": path
-                        }
+                        recv_socket, {"type": "image", "sid": uid, "path": path}
                     )
                     log(uid, f"Image sent to: {rid} is Delivered")
             elif packet_type == "logout":
@@ -325,11 +332,10 @@ def handle(client, uid):
             elif packet_type == "get_pfp":
                 uid = packet["uid"]
                 path = get_pfp_path(uid)
-                send_packet(client, {"type":"pfp","path":path})
+                send_packet(client, {"type": "pfp", "path": path})
             elif packet_type == "set_pfp":
-                path = save_pfp(uid, packet["name"], packet["data"])
+                path = save_pfp(uid, packet["data"])
                 save_pfp_path(uid, path)
-
     except Exception as e:
         traceback.print_exc()
         server_log(f"ERROR from {uid}: {e}")
