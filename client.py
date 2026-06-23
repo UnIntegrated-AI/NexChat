@@ -306,6 +306,7 @@ class LoginFrame(ctk.CTkFrame):
 
 
 class MainFrame(ctk.CTkFrame):
+
     def __init__(self, parent):
         super().__init__(parent)
 
@@ -648,7 +649,7 @@ class MainFrame(ctk.CTkFrame):
                 )
 
             self.frame_index = 0
-            self.animate_pfp()
+            self.animate_pfp(self.spfp)
 
         else:
             img.thumbnail((40, 40))
@@ -672,20 +673,18 @@ class MainFrame(ctk.CTkFrame):
 
         img_packet = {
             "type": "set_pfp",
-            "rid": self.recv_id,
-            "name": os.path.basename(path),
             "data": img_b64,
         }
 
         send_packet(client, img_packet)
         self.display_pfp(path)
 
-    def animate_pfp(self):
-        self.spfp.configure(image=self.frames[self.frame_index])
+    def animate_pfp(self, label):
+        label.configure(image=self.frames[self.frame_index])
 
         self.frame_index = (self.frame_index + 1) % len(self.frames)
 
-        self.after(50, self.animate_pfp)
+        self.after(50, lambda: self.animate_pfp(label))
 
     def get_img(self):
         path = filedialog.askopenfilename(
@@ -800,9 +799,30 @@ class MainFrame(ctk.CTkFrame):
             )
             btn.pack(fill="x", pady=5)
 
+    def load_pfp(self, path):
+        img = Image.open(path)
+        if getattr(img, "is_animated", False):
+            self.frames = []
+            for frame in ImageSequence.Iterator(img):
+                frame = frame.copy()
+                self.frames.append(
+                    ctk.CTkImage(light_image=frame, dark_image=frame, size=(100, 100))
+                )
+
+            self.frame_index = 0
+            self.animate_pfp(self.pfp)
+
+        else:
+            img.thumbnail((40, 40))
+            photo = ctk.CTkImage(light_image=img, dark_image=img, size=(100, 100))
+
+            self.pfp.configure(image=photo)
+            self.pfp.image = photo
+
     def open_chat(self, chat):
         self.recv_id = chat["uid"]
         self.recv_name.configure(text=chat["uname"])
+        send_packet(client, {"type": "load_pfp", "rid": self.recv_id})
         self.chatf.grid()
         send_packet(client, {"type": "load_chat", "rid": self.recv_id})
         self.refresh_recent_chats()
@@ -977,15 +997,17 @@ class MainFrame(ctk.CTkFrame):
                     msgs = packet["msgs"]
                     if msgs:
                         self.after(0, lambda m=msgs: self.load_chat_history(m))
-                # elif packet_type == "pfp":
-                #     path = packet["path"]
-                #     self.after(0, lambda: self.display_pfp(path))
+                elif packet_type == "loaded_pfp":
+                    path = packet["path"]
+                    self.after(0, lambda: self.load_pfp(path))
             except Exception as e:
                 print(f"An error occurred while receiving message: {e}")
                 break
 
 
 # --------------------- * ---------------------
+
+# --------------------- EmojiPanel Class ---------------------
 
 
 class EmojiPanel(ctk.CTkToplevel):
@@ -1040,6 +1062,8 @@ class EmojiPanel(ctk.CTkToplevel):
     def insert_emoji(self, emoji):
         self.entry.insert("insert", emoji)
 
+
+# --------------------- * ---------------------
 
 app = App()
 app.mainloop()
