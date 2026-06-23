@@ -10,7 +10,7 @@ from tkinter import filedialog
 import os
 import sys
 import base64
-from PIL import Image
+from PIL import Image, ImageSequence
 
 # --------------------- * ---------------------
 
@@ -23,6 +23,7 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((HOST, PORT))
 
 chatids = []
+
 
 # --------------------- * ---------------------
 
@@ -154,7 +155,7 @@ class LoginFrame(ctk.CTkFrame):
         self.heading = ctk.CTkLabel(
             self.lframe,
             text="NexChat",
-            font=("Segoe UI", 25, "bold"),
+            font=("Segoe UI Emoji", 25, "bold"),
             text_color=light_text,
         )
 
@@ -163,7 +164,7 @@ class LoginFrame(ctk.CTkFrame):
         self.sub_heading = ctk.CTkLabel(
             self.lframe,
             text="A simple place for meaningful conversations to unfold naturally.",
-            font=("Segoe UI", 15),
+            font=("Segoe UI Emoji", 15),
             text_color=less_light_text,
             wraplength=300,
         )
@@ -182,7 +183,7 @@ class LoginFrame(ctk.CTkFrame):
             self.ef,
             text_color=light_text,
             text="Login / Register",
-            font=("Segoe UI", 25, "bold"),
+            font=("Segoe UI Emoji", 25, "bold"),
         )
         self.login_heading.grid(row=1, column=0, sticky="ew", padx=100)
 
@@ -195,7 +196,7 @@ class LoginFrame(ctk.CTkFrame):
             placeholder_text="Username...",
             corner_radius=12,
             height=45,
-            font=("Segoe UI", 18),
+            font=("Segoe UI Emoji", 18),
         )
         self.uentry.grid(row=2, column=0, sticky="ew", padx=50)
 
@@ -208,7 +209,7 @@ class LoginFrame(ctk.CTkFrame):
             placeholder_text="Password...",
             corner_radius=12,
             height=45,
-            font=("Segoe UI", 18),
+            font=("Segoe UI Emoji", 18),
             show="*",
         )
         self.pentry.grid(row=3, column=0, sticky="ew", padx=50)
@@ -223,7 +224,7 @@ class LoginFrame(ctk.CTkFrame):
             fg_color=yellow,
             hover_color=yellow_light_shade1,
             height=50,
-            font=("Segoe UI", 18, "bold"),
+            font=("Segoe UI Emoji", 18, "bold"),
             command=lambda: self.get_cred(parent, self.ef),
         )
         self.submit.grid(row=6, column=0, sticky="we", padx=100)
@@ -243,7 +244,7 @@ class LoginFrame(ctk.CTkFrame):
                 self.resp = ctk.CTkLabel(
                     ef,
                     text="Registration Successful !",
-                    font=("Segoe UI", 15),
+                    font=("Segoe UI Emoji", 15),
                     text_color=light_text,
                 )
                 self.resp.grid(row=4, column=0, padx=20, sticky="ew")
@@ -261,7 +262,7 @@ class LoginFrame(ctk.CTkFrame):
                 self.resp = ctk.CTkLabel(
                     ef,
                     text="Login Successful !",
-                    font=("Segoe UI", 15),
+                    font=("Segoe UI Emoji", 15),
                     text_color=light_text,
                 )
                 self.resp.grid(row=4, column=0, padx=20, sticky="ew")
@@ -278,14 +279,17 @@ class LoginFrame(ctk.CTkFrame):
                 self.resp = ctk.CTkLabel(
                     ef,
                     text="Invalid Credentials !",
-                    font=("Segoe UI", 15),
+                    font=("Segoe UI Emoji", 15),
                     text_color=red,
                 )
                 self.resp.grid(row=4, column=0, padx=20, sticky="ew")
                 self.after(2000, self.resp.grid_remove)
         else:
             self.warn = ctk.CTkLabel(
-                self.ef, text="Empty Cred !", font=("Segoe UI", 15), text_color=red
+                self.ef,
+                text="Empty Cred !",
+                font=("Segoe UI Emoji", 15),
+                text_color=red,
             )
             self.warn.grid(row=4, column=0, padx=20, sticky="ew")
             self.after(2000, self.warn.grid_remove)
@@ -312,7 +316,7 @@ class MainFrame(ctk.CTkFrame):
         self.pfp = None
 
         send_packet(client, {"type": "get_recent", "uid": self.uid})
-        send_packet(client, {"type":"get_pfp", "uid":self.uid})
+        send_packet(client, {"type": "get_pfp", "uid": self.uid})
 
         self.configure(fg_color=black, corner_radius=0)
 
@@ -327,16 +331,22 @@ class MainFrame(ctk.CTkFrame):
         self.sidebar.grid_propagate(False)
 
         self.sidebar.grid_rowconfigure(0, weight=1)
-        self.sidebar.grid_rowconfigure((1), weight=5)
-        self.sidebar.grid_rowconfigure((2), weight=1)
         self.sidebar.grid_columnconfigure(0, weight=1)
 
         # Settings Frame
 
-        self.settingsf = ctk.CTkFrame(self.sidebar, fg_color=black_light_shade1, corner_radius=0, width=320)
+        self.settingsf = ctk.CTkFrame(
+            self.sidebar, fg_color=black_light_shade1, corner_radius=0, width=320
+        )
         self.settingsf.grid(row=0, column=1, sticky="nswe")
         self.settingsf.grid_propagate(False)
         self.settingsf.grid_forget()
+
+        self.settingsf.grid_rowconfigure((0), weight=1)
+        self.settingsf.grid_rowconfigure((1), weight=1)
+        self.settingsf.grid_rowconfigure((2), weight=1)
+        self.settingsf.grid_rowconfigure((3), weight=1)
+        self.settingsf.grid_columnconfigure(0, weight=1)
 
         self.sheading_panel = ctk.CTkFrame(
             self.settingsf, fg_color=black_light_shade1, corner_radius=0
@@ -348,7 +358,10 @@ class MainFrame(ctk.CTkFrame):
         self.sheading_panel.grid_columnconfigure((1), weight=1)
 
         self.sheading = ctk.CTkLabel(
-            self.sheading_panel, text_color=light_text, text="Settings", font=("Segoe UI", 25, "bold")
+            self.sheading_panel,
+            text_color=light_text,
+            text="Settings",
+            font=("Segoe UI Emoji", 25, "bold"),
         )
         self.sheading.grid(row=0, column=0, sticky="w", pady=10, padx=20)
 
@@ -363,7 +376,7 @@ class MainFrame(ctk.CTkFrame):
             hover_color=black_light_shade2,
             height=30,
             width=30,
-            font=("Segoe UI", 25, "bold"),
+            font=("Segoe UI Emoji", 25, "bold"),
             command=lambda: self.settings(),
         )
         self.settings_btn.grid(row=0, column=1, sticky="nse")
@@ -374,7 +387,6 @@ class MainFrame(ctk.CTkFrame):
             text="",
         )
         self.spfp.grid(row=1, column=0, sticky="nsew", padx=25, pady=10)
-
 
         self.set_pfp_btn = ctk.CTkButton(
             self.settingsf,
@@ -387,7 +399,7 @@ class MainFrame(ctk.CTkFrame):
             hover_color=black_light_shade2,
             height=30,
             width=30,
-            font=("Segoe UI", 25, "bold"),
+            font=("Segoe UI Emoji", 25, "bold"),
             command=lambda: self.get_pfp(),
         )
         self.set_pfp_btn.grid(row=2, column=0, sticky="ew")
@@ -398,8 +410,6 @@ class MainFrame(ctk.CTkFrame):
             self.sidebar, fg_color=black_light_shade1, corner_radius=0, width=320
         )
         self.udf.grid(row=0, column=0, sticky="nswe")
-
-        # self.udf.grid_propagate(False)
 
         self.udf.grid_rowconfigure(0, weight=1)
         self.udf.grid_rowconfigure(1, weight=1)
@@ -417,7 +427,10 @@ class MainFrame(ctk.CTkFrame):
         self.heading_panel.grid_columnconfigure((1), weight=10)
 
         self.chats_heading = ctk.CTkLabel(
-            self.heading_panel, text_color=light_text, text="Chats", font=("Segoe UI", 25, "bold")
+            self.heading_panel,
+            text_color=light_text,
+            text="Chats",
+            font=("Segoe UI Emoji", 25, "bold"),
         )
         self.chats_heading.grid(row=0, column=0, sticky="w", pady=10, padx=20)
 
@@ -432,7 +445,7 @@ class MainFrame(ctk.CTkFrame):
             hover_color=black_light_shade2,
             height=30,
             width=30,
-            font=("Segoe UI", 25, "bold"),
+            font=("Segoe UI Emoji", 25, "bold"),
             command=lambda: self.settings(),
         )
         self.settings_btn.grid(row=0, column=1, sticky="nse")
@@ -455,7 +468,7 @@ class MainFrame(ctk.CTkFrame):
             placeholder_text="Search or start a new chat",
             corner_radius=12,
             height=40,
-            font=("Segoe UI", 18),
+            font=("Segoe UI Emoji", 18),
         )
         self.search_entry.grid(row=0, column=0, sticky="ew", padx=10, pady=(0, 10))
 
@@ -470,7 +483,7 @@ class MainFrame(ctk.CTkFrame):
             hover_color=black_light_shade2,
             height=40,
             width=40,
-            font=("Segoe UI", 18, "bold"),
+            font=("Segoe UI Emoji", 18, "bold"),
             command=lambda: self.search_people(),
         )
         self.search_button.grid(row=0, column=1, padx=(0, 10), pady=(0, 10))
@@ -490,11 +503,10 @@ class MainFrame(ctk.CTkFrame):
             fg_color=red,
             hover_color=red_light_shade,
             height=40,
-            font=("Segoe UI", 18, "bold"),
+            font=("Segoe UI Emoji", 18, "bold"),
             command=lambda: self.logout(),
         )
         self.lbtn.grid(row=3, column=0, sticky="swe", padx=10, pady=(0, 10))
-
 
         # Chat Frame
 
@@ -507,7 +519,9 @@ class MainFrame(ctk.CTkFrame):
         self.chatf.grid_rowconfigure(1, weight=20)
         self.chatf.grid_rowconfigure(2, weight=2)
 
-        self.header = ctk.CTkFrame(self.chatf, fg_color=black_light_shade1, corner_radius=12)
+        self.header = ctk.CTkFrame(
+            self.chatf, fg_color=black_light_shade1, corner_radius=12
+        )
         self.header.grid(row=0, column=0, sticky="ew", padx=25)
 
         self.header.grid_columnconfigure((0), weight=5)
@@ -525,7 +539,7 @@ class MainFrame(ctk.CTkFrame):
             self.header,
             fg_color="transparent",
             text=f"",
-            font=("Segoe UI", 22, "bold"),
+            font=("Segoe UI Emoji", 22, "bold"),
             text_color=light_text,
         )
         self.recv_name.grid(row=0, column=1, sticky="nsw", padx=25, pady=10)
@@ -542,8 +556,9 @@ class MainFrame(ctk.CTkFrame):
 
         self.msg_frame.grid_rowconfigure(0, weight=1)
         self.msg_frame.grid_columnconfigure((0), weight=1)
-        self.msg_frame.grid_columnconfigure((1), weight=50)
-        self.msg_frame.grid_columnconfigure((2), weight=1)
+        self.msg_frame.grid_columnconfigure((1), weight=1)
+        self.msg_frame.grid_columnconfigure((2), weight=50)
+        self.msg_frame.grid_columnconfigure((3), weight=1)
 
         self.imgbtn = ctk.CTkButton(
             self.msg_frame,
@@ -556,10 +571,26 @@ class MainFrame(ctk.CTkFrame):
             corner_radius=15,
             fg_color=black,
             hover_color="#2B2F33",
-            font=("Segoe UI", 18, "bold"),
+            font=("Segoe UI Emoji", 18, "bold"),
             command=lambda: self.get_img(),
         )
         self.imgbtn.grid(row=0, column=0, sticky="nsew", padx=(25, 10))
+
+        self.emoji_btn = ctk.CTkButton(
+            self.msg_frame,
+            text_color=light_text,
+            text="😊",
+            border_color=yellow_light_shade1,
+            height=45,
+            width=45,
+            border_width=1,
+            corner_radius=15,
+            fg_color=black,
+            hover_color="#2B2F33",
+            font=("Segoe UI Emoji", 18, "bold"),
+            command=lambda: open_emoji_panel(),
+        )
+        self.emoji_btn.grid(row=0, column=1, sticky="nsew", padx=(0, 10))
 
         self.msg_entry = ctk.CTkTextbox(
             self.msg_frame,
@@ -569,9 +600,15 @@ class MainFrame(ctk.CTkFrame):
             border_color=yellow_light_shade1,
             border_width=1,
             corner_radius=12,
-            font=("Segoe UI", 18),
+            font=("Segoe UI Emoji", 18),
         )
-        self.msg_entry.grid(row=0, column=1, sticky="nsew", padx=(0, 10))
+        self.msg_entry.grid(row=0, column=2, sticky="nsew", padx=(0, 10))
+
+        self.emoji_window = None
+
+        def open_emoji_panel():
+            if self.emoji_window is None or not self.emoji_window.winfo_exists():
+                self.emoji_window = EmojiPanel(self, self.msg_entry)
 
         self.sendbtn = ctk.CTkButton(
             self.msg_frame,
@@ -584,10 +621,10 @@ class MainFrame(ctk.CTkFrame):
             corner_radius=15,
             fg_color=black,
             hover_color="#2B2F33",
-            font=("Segoe UI", 18, "bold"),
+            font=("Segoe UI Emoji", 18, "bold"),
             command=lambda: self.write(self.recv_id),
         )
-        self.sendbtn.grid(row=0, column=2, sticky="nsew", padx=(0, 25))
+        self.sendbtn.grid(row=0, column=3, sticky="nsew", padx=(0, 25))
 
         recv_thread = threading.Thread(target=lambda: self.recv(), daemon=True)
         recv_thread.start()
@@ -599,45 +636,35 @@ class MainFrame(ctk.CTkFrame):
         else:
             self.settingsf.grid_forget()
             self.udf.grid(row=0, column=0, sticky="nswe")
-        
-        # print("Inside Settings")
 
     def display_pfp(self, path):
         img = Image.open(path)
-        img.thumbnail((40,40))
+        if getattr(img, "is_animated", False):
+            self.frames = []
+            for frame in ImageSequence.Iterator(img):
+                frame = frame.copy()
+                self.frames.append(
+                    ctk.CTkImage(light_image=frame, dark_image=frame, size=(100, 100))
+                )
 
-        photo = ctk.CTkImage(
-            light_image=img,
-            dark_image=img,
-            size=(40,40)
-        )
+            self.frame_index = 0
+            self.animate_pfp()
 
-        self.pfp.configure(image=photo)
-        self.pfp.image = photo
+        else:
+            img.thumbnail((40, 40))
+            photo = ctk.CTkImage(light_image=img, dark_image=img, size=(100, 100))
 
+            self.spfp.configure(image=photo)
+            self.spfp.image = photo
 
     def get_pfp(self):
         path = filedialog.askopenfilename(
-            filetypes={
-                ("Images", "*.png *.jpg *.jpeg *.gif")
-            }
+            filetypes=[("Images", "*.png *.jpg *.jpeg *.gif")]
         )
         if path:
             self.set_pfp(path)
 
     def set_pfp(self, path):
-        img = Image.open(path)
-        img.thumbnail((40,40))
-
-        photo = ctk.CTkImage(
-            light_image=img,
-            dark_image=img,
-            size=(100,100)
-        )
-
-        self.spfp.configure(image=photo)
-        self.spfp.image = photo
-
         with open(path, "rb") as file:
             img_data = file.read()
 
@@ -647,20 +674,26 @@ class MainFrame(ctk.CTkFrame):
             "type": "set_pfp",
             "rid": self.recv_id,
             "name": os.path.basename(path),
-            "data": img_b64
+            "data": img_b64,
         }
 
         send_packet(client, img_packet)
+        self.display_pfp(path)
+
+    def animate_pfp(self):
+        self.spfp.configure(image=self.frames[self.frame_index])
+
+        self.frame_index = (self.frame_index + 1) % len(self.frames)
+
+        self.after(50, self.animate_pfp)
 
     def get_img(self):
         path = filedialog.askopenfilename(
-            filetypes=[
-                ("Images", "*.png *.jpg *.jpeg *.gif")
-            ]
+            filetypes=[("Images", "*.png *.jpg *.jpeg *.gif")]
         )
         if path:
             self.send_img_data(path)
-        
+
     def send_img_data(self, path):
         with open(path, "rb") as file:
             img_data = file.read()
@@ -671,7 +704,7 @@ class MainFrame(ctk.CTkFrame):
             "type": "img",
             "rid": self.recv_id,
             "name": os.path.basename(path),
-            "data": img_b64
+            "data": img_b64,
         }
 
         send_packet(client, img_packet)
@@ -707,7 +740,7 @@ class MainFrame(ctk.CTkFrame):
             self.chat_list,
             text_color=light_text,
             text="User not Found",
-            font=("Segoe UI", 18),
+            font=("Segoe UI Emoji", 18),
         )
         self.search_status.pack(fill="x", pady=5)
 
@@ -728,7 +761,7 @@ class MainFrame(ctk.CTkFrame):
             corner_radius=15,
             fg_color=black,
             hover_color=black_light_shade2,
-            font=("Segoe UI", 18, "bold"),
+            font=("Segoe UI Emoji", 18, "bold"),
             command=lambda: self.open_chat({"uid": uid, "uname": uname}),
         )
         btn.pack(fill="x", pady=5)
@@ -747,7 +780,7 @@ class MainFrame(ctk.CTkFrame):
                 self.chat_list,
                 text_color=light_text,
                 text="Its all Quite out here...",
-                font=("Segoe UI", 18),
+                font=("Segoe UI Emoji", 18),
             )
             self.status.pack(fill="x", pady=5)
             return
@@ -761,7 +794,7 @@ class MainFrame(ctk.CTkFrame):
                 fg_color=black,
                 height=45,
                 hover_color=black_light_shade2,
-                font=("Segoe UI", 18, "bold"),
+                font=("Segoe UI Emoji", 18, "bold"),
                 anchor="w",
                 command=lambda c=chat: self.open_chat(c),
             )
@@ -783,7 +816,7 @@ class MainFrame(ctk.CTkFrame):
             label = ctk.CTkLabel(
                 bubble,
                 text=message,
-                font=("Segoe UI", 16),
+                font=("Segoe UI Emoji", 16),
                 text_color=dark_text,
                 wraplength=450,
                 anchor="e",
@@ -795,7 +828,7 @@ class MainFrame(ctk.CTkFrame):
             label = ctk.CTkLabel(
                 bubble,
                 text=message,
-                font=("Segoe UI", 16),
+                font=("Segoe UI Emoji", 16),
                 text_color=dark_text,
                 wraplength=450,
                 anchor="w",
@@ -845,33 +878,53 @@ class MainFrame(ctk.CTkFrame):
         if sid == self.recv_id:
             self.display_image(path, False)
 
+    def animate_img(self, label, frames, index=0):
+
+        if not label.winfo_exists():
+            return
+
+        try:
+            label.configure(image=frames[index])
+        except:
+            return
+
+        next_index = (index + 1) % len(frames)
+
+        self.after(50, lambda: self.animate_img(label, frames, next_index))
+
     def display_image(self, path, user_msg=False):
 
-        row = ctk.CTkFrame(
-            self.chat_area,
-            fg_color="transparent"
-        )
-
+        row = ctk.CTkFrame(self.chat_area, fg_color="transparent")
         row.pack(fill="x", pady=5)
 
         img = Image.open(path)
 
-        img.thumbnail((250, 250))
+        label = ctk.CTkLabel(row, text="")
 
+        if getattr(img, "is_animated", False):
 
-        photo = ctk.CTkImage(
-            light_image=img,
-            dark_image=img,
-            size=img.size
-        )
+            frames = []
 
-        label = ctk.CTkLabel(
-            row,
-            image=photo,
-            text="",
-        )
+            for frame in ImageSequence.Iterator(img):
+                frame = frame.copy()
+                frame.thumbnail((250, 250))
 
-        label.image = photo
+                frames.append(
+                    ctk.CTkImage(light_image=frame, dark_image=frame, size=frame.size)
+                )
+
+            label.configure(image=frames[0])
+            label.image = frames
+            self.animate_img(label, frames)
+
+        else:
+
+            img.thumbnail((250, 250))
+
+            photo = ctk.CTkImage(light_image=img, dark_image=img, size=img.size)
+
+            label.configure(image=photo)
+            label.image = photo
 
         if user_msg:
             label.pack(anchor="e", padx=10)
@@ -907,8 +960,9 @@ class MainFrame(ctk.CTkFrame):
 
                     self.after(
                         0,
-                        lambda sid=sender_id, path=image_path:
-                        self.show_live_image(sid, path)
+                        lambda sid=sender_id, path=image_path: self.show_live_image(
+                            sid, path
+                        ),
                     )
                 elif packet_type == "pfp":
                     path = packet["path"]
@@ -923,11 +977,69 @@ class MainFrame(ctk.CTkFrame):
                     msgs = packet["msgs"]
                     if msgs:
                         self.after(0, lambda m=msgs: self.load_chat_history(m))
+                # elif packet_type == "pfp":
+                #     path = packet["path"]
+                #     self.after(0, lambda: self.display_pfp(path))
             except Exception as e:
                 print(f"An error occurred while receiving message: {e}")
                 break
 
+
 # --------------------- * ---------------------
+
+
+class EmojiPanel(ctk.CTkToplevel):
+    def __init__(self, parent, entry):
+        super().__init__(parent)
+
+        self.entry = entry
+
+        self.title("Emoji")
+        self.geometry("400x200")
+        self.resizable(False, False)
+
+        self.attributes("-topmost", True)
+
+        EMOJIS = [
+            "😀",
+            "😂",
+            "❤️",
+            "👍",
+            "🔥",
+            "😭",
+            "😎",
+            "🎉",
+            "🤔",
+            "😡",
+            "😊",
+            "🥰",
+            "😴",
+            "👀",
+            "💀",
+        ]
+
+        scroll = ctk.CTkScrollableFrame(self)
+        scroll.pack(fill="both", expand=True, padx=5, pady=5)
+
+        for i, symbol in enumerate(EMOJIS):
+            btn = ctk.CTkButton(
+                scroll,
+                text=symbol,
+                border_color=yellow_light_shade1,
+                height=45,
+                width=45,
+                border_width=1,
+                corner_radius=15,
+                fg_color=black,
+                hover_color="#2B2F33",
+                font=("Segoe UI Emoji", 18, "bold"),
+                command=lambda s=symbol: self.insert_emoji(s),
+            )
+            btn.grid(row=i // 5, column=i % 5, padx=5, pady=5)
+
+    def insert_emoji(self, emoji):
+        self.entry.insert("insert", emoji)
+
 
 app = App()
 app.mainloop()
