@@ -27,6 +27,9 @@ server.listen()
 clients = []
 userids = []
 
+UPLOADS_DIR = "uploads"
+os.makedirs(UPLOADS_DIR, exist_ok=True)
+
 # --------------------- * ---------------------
 
 
@@ -101,7 +104,7 @@ cursor.execute("create database if not exists NexChat")
 cursor.execute("use NexChat")
 
 cursor.execute(
-    "create table if not exists users(uid int auto_increment primary key, uname varchar(50) unique not null, passwd text not null)"
+    "create table if not exists users(uid int auto_increment primary key, uname varchar(50) unique not null, passwd text not null, pfp varchar(255) not null default \"pfps/default.png\")"
 )
 
 cursor.execute(
@@ -204,8 +207,6 @@ def search_user(uname, requester_uid):
     return cursor.fetchall()
 
 
-# --------------------- * ---------------------
-
 def save_img(uid, rid, name, img_b64):
     filename = f"{uid}-{rid}-{name}"
     save_path = os.path.join("uploads", filename)
@@ -215,6 +216,31 @@ def save_img(uid, rid, name, img_b64):
         img.write(bimg)
 
     return save_path
+
+def save_pfp(uid, name, img_b64):
+    filename = f"{uid}-{name}"
+    save_path = os.path.join("pfps", filename)
+    bimg = base64.b64decode(img_b64)
+
+    with open(save_path, "wb") as img:
+        img.write(bimg)
+
+    return save_path
+
+def save_pfp_path(uid, path):
+    cursor.execute("update users set pfp_path = %s where uid = %s",(path,uid))
+    conn.commit()
+
+def get_pfp_path(uid):
+    cursor.execute("select pfp from users where uid = %s",(uid,))
+    return cursor.fetchone()
+
+def check_name(uname):
+    cursor.execute("select uname from users where uname = %s",(uname,))
+    return cursor.fetchone()
+
+# --------------------- * ---------------------
+
 
 # --------------------- Handle Function ---------------------
 
@@ -296,8 +322,16 @@ def handle(client, uid):
                 else:
                     send_packet(client, {"type": "user_not_found"})
                     log(uid, f"Sent Search Result: User not Found")
+            elif packet_type == "get_pfp":
+                uid = packet["uid"]
+                path = get_pfp_path(uid)
+                send_packet(client, {"type":"pfp","path":path})
+            elif packet_type == "set_pfp":
+                path = save_pfp(uid, packet["name"], packet["data"])
+                save_pfp_path(uid, path)
+
     except Exception as e:
-        # traceback.print_exc()
+        traceback.print_exc()
         server_log(f"ERROR from {uid}: {e}")
         server_log(f"User: {uid} disconnected")
         log(uid, f"User: {uid} disconnected")
@@ -327,8 +361,8 @@ def recv():
                     break
                 username = login_data["uname"]
                 password = hashpass(login_data["passwd"])
-                user_record = verify_user(username, password)
-                if not user_record:
+                get_name = check_name(username)
+                if not get_name:
                     create_user(username, password)
                     new_uid = get_uid(username, password)
                     uid = new_uid
@@ -346,8 +380,9 @@ def recv():
                     )
                     handle_thread.start()
                     break
-                else:
-                    if user_record[1] == username and user_record[2] == password:
+                elif get_name:
+                    user_record = verify_user(username, password)
+                    if user_record:
                         clients.append(client)
                         userids.append(user_record[0])
                         uid = user_record[0]
@@ -365,10 +400,10 @@ def recv():
                         break
                     else:
                         send_packet(client, {"type": "invalid_creds"})
-                        log(uid, f"Invalid Credentials!")
+                        server_log(f"Invalid Credentials!")
                         continue
         except Exception as e:
-
+            traceback.print_exc()
             server_log(f"ERROR from {address}: {e}")
             server_log(f"User: {address} disconnected")
             pass
@@ -427,8 +462,6 @@ def server_log(msg):
 
 
 # --------------------- * ---------------------
-
-os.makedirs("uploads", exist_ok=True)
 
 init_log()
 print("Welcome to NexChat!")
