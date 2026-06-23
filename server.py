@@ -336,6 +336,9 @@ def handle(client, uid):
             elif packet_type == "set_pfp":
                 path = save_pfp(uid, packet["data"])
                 save_pfp_path(uid, path)
+            elif packet_type == "load_pfp":
+                path = get_pfp_path(packet["rid"])
+                send_packet(client, {"type": "loaded_pfp", "path": path})
     except Exception as e:
         traceback.print_exc()
         server_log(f"ERROR from {uid}: {e}")
