@@ -33,15 +33,15 @@ light_text = "#FFFFFF"
 less_light_text = "#C9D1D9"
 dark_text = "#111111"
 
-black = "#2A2A2A"
-black_light_shade1 = "#333333"
-black_light_shade2 = "#414141"
-black_light_shade3 = "#555555"
+black = "#403E43"
+black_light_shade1 = "#4E4C50"
+black_light_shade2 = "#5B595E"
+black_light_shade3 = "#6D6B71"
 
-yellow = "#DEDEDE"
-yellow_light_shade1 = "#F6F6F6"
-yellow_dark_shade1 = "#BABABA"
-yellow_dark_shade2 = "#979797"
+yellow = "#C8A11A"
+yellow_light_shade1 = "#EECA3F"
+yellow_dark_shade1 = "#AA8206"
+yellow_dark_shade2 = "#8C6905"
 
 red = "#FF1E1E"
 red_light_shade = "#FF4545"
@@ -326,7 +326,7 @@ class MainFrame(ctk.CTkFrame):
         self.grid_columnconfigure(2, weight=20)
 
         self.sidebar = ctk.CTkFrame(
-            self, fg_color=black_light_shade1, corner_radius=0, width=320
+            self, fg_color=black_light_shade1, corner_radius=0, width=350
         )
         self.sidebar.grid(row=0, column=0, sticky="nsew")
         self.sidebar.grid_propagate(False)
@@ -337,7 +337,7 @@ class MainFrame(ctk.CTkFrame):
         # Settings Frame
 
         self.settingsf = ctk.CTkFrame(
-            self.sidebar, fg_color=black_light_shade1, corner_radius=0, width=320
+            self.sidebar, fg_color=black_light_shade1, corner_radius=0, width=350
         )
         self.settingsf.grid(row=0, column=1, sticky="nswe")
         self.settingsf.grid_propagate(False)
@@ -408,7 +408,7 @@ class MainFrame(ctk.CTkFrame):
         # User Details Frame
 
         self.udf = ctk.CTkFrame(
-            self.sidebar, fg_color=black_light_shade1, corner_radius=0, width=320
+            self.sidebar, fg_color=black_light_shade1, corner_radius=0, width=350
         )
         self.udf.grid(row=0, column=0, sticky="nswe")
 
@@ -421,11 +421,11 @@ class MainFrame(ctk.CTkFrame):
         self.heading_panel = ctk.CTkFrame(
             self.udf, fg_color=black_light_shade1, corner_radius=0
         )
-        self.heading_panel.grid(row=0, column=0, sticky="ew", pady=10, padx=20)
+        self.heading_panel.grid(row=0, column=0, sticky="ew", pady=10, padx=10)
 
         self.heading_panel.grid_rowconfigure(0, weight=1)
-        self.heading_panel.grid_columnconfigure((0), weight=10)
         self.heading_panel.grid_columnconfigure((1), weight=10)
+        self.heading_panel.grid_columnconfigure((2), weight=1)
 
         self.chats_heading = ctk.CTkLabel(
             self.heading_panel,
@@ -433,7 +433,7 @@ class MainFrame(ctk.CTkFrame):
             text="Chats",
             font=("Segoe UI Emoji", 25, "bold"),
         )
-        self.chats_heading.grid(row=0, column=0, sticky="w", pady=10, padx=20)
+        self.chats_heading.grid(row=0, column=1, sticky="w", pady=10, padx=5)
 
         self.settings_btn = ctk.CTkButton(
             self.heading_panel,
@@ -449,7 +449,7 @@ class MainFrame(ctk.CTkFrame):
             font=("Segoe UI Emoji", 25, "bold"),
             command=lambda: self.settings(),
         )
-        self.settings_btn.grid(row=0, column=1, sticky="nse")
+        self.settings_btn.grid(row=0, column=2, sticky="nse")
 
         self.search_panel = ctk.CTkFrame(
             self.udf, fg_color=black_light_shade1, corner_radius=0
@@ -652,7 +652,8 @@ class MainFrame(ctk.CTkFrame):
             self.animate_pfp(self.spfp)
 
         else:
-            img.thumbnail((40, 40))
+            display_size = (img.width, img.height)
+            img.thumbnail(display_size, Image.Resampling.LANCZOS)
             photo = ctk.CTkImage(light_image=img, dark_image=img, size=(100, 100))
 
             self.spfp.configure(image=photo)
@@ -806,15 +807,16 @@ class MainFrame(ctk.CTkFrame):
             for frame in ImageSequence.Iterator(img):
                 frame = frame.copy()
                 self.frames.append(
-                    ctk.CTkImage(light_image=frame, dark_image=frame, size=(100, 100))
+                    ctk.CTkImage(light_image=frame, dark_image=frame, size=(80, 80))
                 )
 
             self.frame_index = 0
             self.animate_pfp(self.pfp)
 
         else:
-            img.thumbnail((40, 40))
-            photo = ctk.CTkImage(light_image=img, dark_image=img, size=(100, 100))
+            display_size = (img.width, img.height)
+            img.thumbnail(display_size, Image.Resampling.LANCZOS)
+            photo = ctk.CTkImage(light_image=img, dark_image=img, size=(80, 80))
 
             self.pfp.configure(image=photo)
             self.pfp.image = photo
