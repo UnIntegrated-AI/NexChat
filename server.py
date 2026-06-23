@@ -11,14 +11,16 @@ import os
 import hashlib
 from cryptography.fernet import Fernet
 import base64
-import traceback
+# import traceback
 
 # --------------------- * ---------------------
 
 # --------------------- Server Variables ---------------------
 
-HOST = "127.0.0.1"  # Server IP here
+HOST = "127.0.0.1"  # Local IP here
 PORT = 5000
+
+SERVER_HOST = "127.0.0.1"
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((HOST, PORT))
@@ -95,7 +97,7 @@ def recv_packet(sock):
 
 # --------------------- MySQL Functions ---------------------
 
-conn = mysql.connector.connect(host=HOST, user="root", password="root")
+conn = mysql.connector.connect(host=SERVER_HOST, user="root", password="root")
 
 cursor = conn.cursor(buffered=True)
 
@@ -340,7 +342,7 @@ def handle(client, uid):
                 path = get_pfp_path(packet["rid"])
                 send_packet(client, {"type": "loaded_pfp", "path": path})
     except Exception as e:
-        traceback.print_exc()
+        # traceback.print_exc()
         server_log(f"ERROR from {uid}: {e}")
         server_log(f"User: {uid} disconnected")
         log(uid, f"User: {uid} disconnected")
@@ -412,7 +414,7 @@ def recv():
                         server_log(f"Invalid Credentials!")
                         continue
         except Exception as e:
-            traceback.print_exc()
+            # traceback.print_exc()
             server_log(f"ERROR from {address}: {e}")
             server_log(f"User: {address} disconnected")
             pass
