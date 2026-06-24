@@ -11,6 +11,7 @@ import os
 import sys
 import base64
 from PIL import Image, ImageSequence
+import pywinstyles
 
 # --------------------- * ---------------------
 
@@ -33,21 +34,21 @@ light_text = "#FFFFFF"
 less_light_text = "#C9D1D9"
 dark_text = "#111111"
 
-black = "#403E43"
-black_light_shade1 = "#4E4C50"
-black_light_shade2 = "#5B595E"
-black_light_shade3 = "#6D6B71"
+black = "#1d1f1f"
+black_light_shade1 = "#161717"
+black_light_shade2 = "#2e2f2f"
+black_light_shade3 = "#242728"
 
-yellow = "#C8A11A"
-yellow_light_shade1 = "#EECA3F"
-yellow_dark_shade1 = "#AA8206"
-yellow_dark_shade2 = "#8C6905"
+yellow = "#19F099"
+yellow_light_shade1 = "#03CD77"
+yellow_dark_shade1 = "#263E2C"
+yellow_dark_shade2 = "#344F3D"
 
 red = "#FF1E1E"
 red_light_shade = "#FF4545"
 
-sender_bubble = yellow_light_shade1
-recv_bubble = yellow_dark_shade1
+sender_bubble = "#144d37"
+recv_bubble = "#242626"
 
 # --------------------- * ---------------------
 
@@ -191,8 +192,8 @@ class LoginFrame(ctk.CTkFrame):
             self.ef,
             text_color=light_text,
             fg_color=black_light_shade2,
-            border_color=yellow_light_shade1,
-            border_width=1,
+            # border_color=yellow_light_shade1,
+            # border_width=1,
             placeholder_text="Username...",
             corner_radius=12,
             height=45,
@@ -204,8 +205,8 @@ class LoginFrame(ctk.CTkFrame):
             self.ef,
             text_color=light_text,
             fg_color=black_light_shade2,
-            border_color=yellow_light_shade1,
-            border_width=1,
+            # border_color=yellow_light_shade1,
+            # border_width=1,
             placeholder_text="Password...",
             corner_radius=12,
             height=45,
@@ -218,8 +219,8 @@ class LoginFrame(ctk.CTkFrame):
             self.ef,
             text_color=dark_text,
             text="Submit ➜",
-            border_color=yellow_dark_shade2,
-            border_width=1,
+            # border_color=yellow_dark_shade2,
+            # border_width=1,
             corner_radius=15,
             fg_color=yellow,
             hover_color=yellow_light_shade1,
@@ -396,14 +397,14 @@ class MainFrame(ctk.CTkFrame):
             # border_color=yellow_light_shade1,
             # border_width=1,
             corner_radius=15,
-            fg_color="transparent",
+            fg_color=black,
             hover_color=black_light_shade2,
             height=30,
             width=30,
             font=("Segoe UI Emoji", 25, "bold"),
             command=lambda: self.get_pfp(),
         )
-        self.set_pfp_btn.grid(row=2, column=0, sticky="ew")
+        self.set_pfp_btn.grid(row=2, column=0)
 
         # User Details Frame
 
@@ -464,8 +465,8 @@ class MainFrame(ctk.CTkFrame):
             self.search_panel,
             text_color=light_text,
             fg_color=black_light_shade2,
-            border_color=yellow,
-            border_width=1,
+            # border_color=yellow,
+            # border_width=1,
             placeholder_text="Search or start a new chat",
             corner_radius=12,
             height=40,
@@ -477,8 +478,8 @@ class MainFrame(ctk.CTkFrame):
             self.search_panel,
             text="➜",
             text_color=light_text,
-            border_color=yellow_light_shade1,
-            border_width=1,
+            # border_color=yellow_light_shade1,
+            # border_width=1,
             corner_radius=15,
             fg_color=black,
             hover_color=black_light_shade2,
@@ -511,7 +512,7 @@ class MainFrame(ctk.CTkFrame):
 
         # Chat Frame
 
-        self.chatf = ctk.CTkFrame(self, fg_color=black, corner_radius=0)
+        self.chatf = ctk.CTkFrame(self, fg_color="transparent", corner_radius=0)
         self.chatf.grid(row=0, column=2, sticky="nsew")
         self.chatf.grid_remove()
 
@@ -519,6 +520,13 @@ class MainFrame(ctk.CTkFrame):
         self.chatf.grid_rowconfigure(0, weight=1)
         self.chatf.grid_rowconfigure(1, weight=20)
         self.chatf.grid_rowconfigure(2, weight=2)
+
+        # self.bg_label = ctk.CTkLabel(
+        #     self.chatf,
+        #     text="",
+        # )
+
+        # self.bg_label.place(relx=0, rely=0, relwidth=1, relheight=1)
 
         self.header = ctk.CTkFrame(
             self.chatf, fg_color=black_light_shade1, corner_radius=12
@@ -546,9 +554,10 @@ class MainFrame(ctk.CTkFrame):
         self.recv_name.grid(row=0, column=1, sticky="nsw", padx=25, pady=10)
 
         self.chat_area = ctk.CTkScrollableFrame(
-            self.chatf, fg_color=black_light_shade2, corner_radius=12
+            self.chatf, fg_color="transparent", corner_radius=12
         )
         self.chat_area.grid(row=1, column=0, sticky="nsew", padx=25, pady=(10, 0))
+
 
         self.msg_frame = ctk.CTkFrame(
             self.chatf, fg_color="transparent", corner_radius=0
@@ -565,10 +574,10 @@ class MainFrame(ctk.CTkFrame):
             self.msg_frame,
             text_color=light_text,
             text="📷",
-            border_color=yellow_light_shade1,
+            # border_color=yellow_light_shade1,
             height=45,
             width=45,
-            border_width=1,
+            # border_width=1,
             corner_radius=15,
             fg_color=black,
             hover_color="#2B2F33",
@@ -581,10 +590,10 @@ class MainFrame(ctk.CTkFrame):
             self.msg_frame,
             text_color=light_text,
             text="😊",
-            border_color=yellow_light_shade1,
+            # border_color=yellow_light_shade1,
             height=45,
             width=45,
-            border_width=1,
+            # border_width=1,
             corner_radius=15,
             fg_color=black,
             hover_color="#2B2F33",
@@ -598,8 +607,8 @@ class MainFrame(ctk.CTkFrame):
             height=45,
             text_color=light_text,
             fg_color=black_light_shade2,
-            border_color=yellow_light_shade1,
-            border_width=1,
+            # border_color=yellow_light_shade1,
+            # border_width=1,
             corner_radius=12,
             font=("Segoe UI Emoji", 18),
         )
@@ -615,10 +624,10 @@ class MainFrame(ctk.CTkFrame):
             self.msg_frame,
             text_color=light_text,
             text="➜",
-            border_color=yellow_light_shade1,
+            # border_color=yellow_light_shade1,
             height=45,
             width=45,
-            border_width=1,
+            # border_width=1,
             corner_radius=15,
             fg_color=black,
             hover_color="#2B2F33",
@@ -629,6 +638,7 @@ class MainFrame(ctk.CTkFrame):
 
         recv_thread = threading.Thread(target=lambda: self.recv(), daemon=True)
         recv_thread.start()
+
 
     def settings(self):
         if self.udf.winfo_ismapped():
@@ -658,6 +668,13 @@ class MainFrame(ctk.CTkFrame):
 
             self.spfp.configure(image=photo)
             self.spfp.image = photo
+
+    def get_bg(self):
+        path = filedialog.askopenfilename(
+            filetypes=[("Images", "*.png *.jpg *.jpeg")]
+        )
+        if path:
+            self.set_bg_img(path)
 
     def get_pfp(self):
         path = filedialog.askopenfilename(
@@ -755,9 +772,9 @@ class MainFrame(ctk.CTkFrame):
         btn = ctk.CTkButton(
             self.chat_list,
             text=uname,
-            border_color=yellow_light_shade1,
+            # border_color=yellow_light_shade1,
             height=45,
-            border_width=1,
+            # border_width=1,
             corner_radius=15,
             fg_color=black,
             hover_color=black_light_shade2,
@@ -788,8 +805,8 @@ class MainFrame(ctk.CTkFrame):
             btn = ctk.CTkButton(
                 self.chat_list,
                 text=chat["uname"],
-                border_color=yellow_light_shade1,
-                border_width=1,
+                # border_color=yellow_light_shade1,
+                # border_width=1,
                 corner_radius=15,
                 fg_color=black,
                 height=45,
@@ -806,17 +823,18 @@ class MainFrame(ctk.CTkFrame):
             self.frames = []
             for frame in ImageSequence.Iterator(img):
                 frame = frame.copy()
+                frame.thumbnail((80, 80))
                 self.frames.append(
-                    ctk.CTkImage(light_image=frame, dark_image=frame, size=(80, 80))
+                    ctk.CTkImage(light_image=frame, dark_image=frame, size=frame.size)
                 )
 
             self.frame_index = 0
             self.animate_pfp(self.pfp)
 
         else:
-            display_size = (img.width, img.height)
+            display_size = (80, 80)
             img.thumbnail(display_size, Image.Resampling.LANCZOS)
-            photo = ctk.CTkImage(light_image=img, dark_image=img, size=(80, 80))
+            photo = ctk.CTkImage(light_image=img, dark_image=img, size=img.size)
 
             self.pfp.configure(image=photo)
             self.pfp.image = photo
@@ -838,8 +856,8 @@ class MainFrame(ctk.CTkFrame):
             label = ctk.CTkLabel(
                 bubble,
                 text=message,
-                font=("Segoe UI Emoji", 16),
-                text_color=dark_text,
+                font=("Segoe UI Emoji", 14),
+                text_color=light_text,
                 wraplength=450,
                 anchor="e",
             )
@@ -850,8 +868,8 @@ class MainFrame(ctk.CTkFrame):
             label = ctk.CTkLabel(
                 bubble,
                 text=message,
-                font=("Segoe UI Emoji", 16),
-                text_color=dark_text,
+                font=("Segoe UI Emoji", 14),
+                text_color=light_text,
                 wraplength=450,
                 anchor="w",
             )
@@ -929,7 +947,7 @@ class MainFrame(ctk.CTkFrame):
 
             for frame in ImageSequence.Iterator(img):
                 frame = frame.copy()
-                frame.thumbnail((250, 250))
+                frame.thumbnail((150, 150))
 
                 frames.append(
                     ctk.CTkImage(light_image=frame, dark_image=frame, size=frame.size)
@@ -941,7 +959,7 @@ class MainFrame(ctk.CTkFrame):
 
         else:
 
-            img.thumbnail((250, 250))
+            img.thumbnail((150, 150))
 
             photo = ctk.CTkImage(light_image=img, dark_image=img, size=img.size)
 
@@ -1049,10 +1067,10 @@ class EmojiPanel(ctk.CTkToplevel):
             btn = ctk.CTkButton(
                 scroll,
                 text=symbol,
-                border_color=yellow_light_shade1,
+                # border_color=yellow_light_shade1,
                 height=45,
                 width=45,
-                border_width=1,
+                # border_width=1,
                 corner_radius=15,
                 fg_color=black,
                 hover_color="#2B2F33",
