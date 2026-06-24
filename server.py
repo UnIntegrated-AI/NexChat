@@ -20,7 +20,7 @@ import base64
 HOST = "127.0.0.1"  # Local IP here
 PORT = 5000
 
-SERVER_HOST = "127.0.0.1"
+SERVER_HOST = "127.0.0.1"   # Database Host Name
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((HOST, PORT))
@@ -251,6 +251,12 @@ def get_pfp_path(uid):
 def check_name(uname):
     cursor.execute("select uname from users where uname = %s", (uname,))
     return cursor.fetchone()
+
+
+def get_bg_path(uid):
+    cursor.execute("select bg from users where uid = %s", (uid,))
+    return cursor.fetchone()[0]
+
 
 
 # --------------------- * ---------------------
