@@ -11,7 +11,6 @@ import os
 import sys
 import base64
 from PIL import Image, ImageSequence
-import pywinstyles
 
 # --------------------- * ---------------------
 
@@ -39,7 +38,7 @@ black_light_shade1 = "#161717"
 black_light_shade2 = "#2e2f2f"
 black_light_shade3 = "#242728"
 
-yellow = "#19F099"
+yellow = "#1BE192"
 yellow_light_shade1 = "#03CD77"
 yellow_dark_shade1 = "#263E2C"
 yellow_dark_shade2 = "#344F3D"
@@ -521,13 +520,6 @@ class MainFrame(ctk.CTkFrame):
         self.chatf.grid_rowconfigure(1, weight=20)
         self.chatf.grid_rowconfigure(2, weight=2)
 
-        # self.bg_label = ctk.CTkLabel(
-        #     self.chatf,
-        #     text="",
-        # )
-
-        # self.bg_label.place(relx=0, rely=0, relwidth=1, relheight=1)
-
         self.header = ctk.CTkFrame(
             self.chatf, fg_color=black_light_shade1, corner_radius=12
         )
@@ -557,7 +549,6 @@ class MainFrame(ctk.CTkFrame):
             self.chatf, fg_color="transparent", corner_radius=12
         )
         self.chat_area.grid(row=1, column=0, sticky="nsew", padx=25, pady=(10, 0))
-
 
         self.msg_frame = ctk.CTkFrame(
             self.chatf, fg_color="transparent", corner_radius=0
@@ -639,7 +630,6 @@ class MainFrame(ctk.CTkFrame):
         recv_thread = threading.Thread(target=lambda: self.recv(), daemon=True)
         recv_thread.start()
 
-
     def settings(self):
         if self.udf.winfo_ismapped():
             self.udf.grid_forget()
@@ -668,13 +658,6 @@ class MainFrame(ctk.CTkFrame):
 
             self.spfp.configure(image=photo)
             self.spfp.image = photo
-
-    def get_bg(self):
-        path = filedialog.askopenfilename(
-            filetypes=[("Images", "*.png *.jpg *.jpeg")]
-        )
-        if path:
-            self.set_bg_img(path)
 
     def get_pfp(self):
         path = filedialog.askopenfilename(
