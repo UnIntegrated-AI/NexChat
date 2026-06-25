@@ -11,7 +11,6 @@ import os
 import hashlib
 from cryptography.fernet import Fernet
 import base64
-# import traceback
 
 # --------------------- * ---------------------
 
@@ -20,7 +19,7 @@ import base64
 HOST = "127.0.0.1"  # Local IP here
 PORT = 5000
 
-SERVER_HOST = "127.0.0.1"   # Database Host Name
+SERVER_HOST = "127.0.0.1"  # Database Host Name
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((HOST, PORT))
@@ -31,6 +30,9 @@ userids = []
 
 UPLOADS_DIR = "uploads"
 os.makedirs(UPLOADS_DIR, exist_ok=True)
+
+PFPS_DIR = "pfps"
+os.makedirs(PFPS_DIR, exist_ok=True)
 
 # --------------------- * ---------------------
 
@@ -229,7 +231,7 @@ def save_img(uid, rid, name, img_b64):
 
 def save_pfp(uid, img_b64):
     filename = f"pfp_{uid}.png"
-    save_path = os.path.join("pfps", filename)
+    save_path = os.path.join(PFPS_DIR, filename)
     bimg = base64.b64decode(img_b64)
 
     with open(save_path, "wb") as img:
@@ -251,12 +253,6 @@ def get_pfp_path(uid):
 def check_name(uname):
     cursor.execute("select uname from users where uname = %s", (uname,))
     return cursor.fetchone()
-
-
-def get_bg_path(uid):
-    cursor.execute("select bg from users where uid = %s", (uid,))
-    return cursor.fetchone()[0]
-
 
 
 # --------------------- * ---------------------
@@ -348,7 +344,6 @@ def handle(client, uid):
                 path = get_pfp_path(packet["rid"])
                 send_packet(client, {"type": "loaded_pfp", "path": path})
     except Exception as e:
-        # traceback.print_exc()
         server_log(f"ERROR from {uid}: {e}")
         server_log(f"User: {uid} disconnected")
         log(uid, f"User: {uid} disconnected")
@@ -420,7 +415,6 @@ def recv():
                         server_log(f"Invalid Credentials!")
                         continue
         except Exception as e:
-            # traceback.print_exc()
             server_log(f"ERROR from {address}: {e}")
             server_log(f"User: {address} disconnected")
             pass
@@ -430,12 +424,12 @@ def recv():
 
 # --------------------- Log Functions ---------------------
 
-logs_dir = "logs"
-os.makedirs(logs_dir, exist_ok=True)
+LOGS_DIR = "logs"
+os.makedirs(LOGS_DIR, exist_ok=True)
 
 
 def get_user_log_file(user_id):
-    return os.path.join(logs_dir, f"user_{user_id}.log")
+    return os.path.join(LOGS_DIR, f"user_{user_id}.log")
 
 
 def init_user_log(user_id):
