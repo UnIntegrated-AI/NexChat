@@ -38,10 +38,10 @@ black_light_shade1 = "#161717"
 black_light_shade2 = "#2e2f2f"
 black_light_shade3 = "#242728"
 
-yellow = "#1BE192"
-yellow_light_shade1 = "#03CD77"
-yellow_dark_shade1 = "#263E2C"
-yellow_dark_shade2 = "#344F3D"
+green = "#1BE192"
+green_light_shade1 = "#03CD77"
+green_dark_shade1 = "#263E2C"
+green_dark_shade2 = "#344F3D"
 
 red = "#FF1E1E"
 red_light_shade = "#FF4545"
@@ -191,7 +191,7 @@ class LoginFrame(ctk.CTkFrame):
             self.ef,
             text_color=light_text,
             fg_color=black_light_shade2,
-            # border_color=yellow_light_shade1,
+            # border_color=green_light_shade1,
             # border_width=1,
             placeholder_text="Username...",
             corner_radius=12,
@@ -204,7 +204,7 @@ class LoginFrame(ctk.CTkFrame):
             self.ef,
             text_color=light_text,
             fg_color=black_light_shade2,
-            # border_color=yellow_light_shade1,
+            # border_color=green_light_shade1,
             # border_width=1,
             placeholder_text="Password...",
             corner_radius=12,
@@ -218,11 +218,11 @@ class LoginFrame(ctk.CTkFrame):
             self.ef,
             text_color=dark_text,
             text="Submit ➜",
-            # border_color=yellow_dark_shade2,
+            # border_color=green_dark_shade2,
             # border_width=1,
             corner_radius=15,
-            fg_color=yellow,
-            hover_color=yellow_light_shade1,
+            fg_color=green,
+            hover_color=green_light_shade1,
             height=50,
             font=("Segoe UI Emoji", 18, "bold"),
             command=lambda: self.get_cred(parent, self.ef),
@@ -251,7 +251,7 @@ class LoginFrame(ctk.CTkFrame):
                 self.after(2000, self.resp.grid_remove)
                 self.submit.configure(state="disabled")
                 spinner = ctk.CTkProgressBar(
-                    ef, width=150, progress_color=yellow, fg_color=black_light_shade3
+                    ef, width=150, progress_color=green, fg_color=black_light_shade3
                 )
                 spinner.grid(row=5, column=0, pady=20)
                 spinner.configure(mode="indeterminate")
@@ -269,7 +269,7 @@ class LoginFrame(ctk.CTkFrame):
                 self.after(2000, self.resp.grid_remove)
                 self.submit.configure(state="disabled")
                 spinner = ctk.CTkProgressBar(
-                    ef, width=150, progress_color=yellow, fg_color=black_light_shade3
+                    ef, width=150, progress_color=green, fg_color=black_light_shade3
                 )
                 spinner.grid(row=5, column=0, pady=20)
                 spinner.configure(mode="indeterminate")
@@ -370,7 +370,7 @@ class MainFrame(ctk.CTkFrame):
             self.sheading_panel,
             text="<",
             text_color=light_text,
-            # border_color=yellow_light_shade1,
+            # border_color=green_light_shade1,
             # border_width=1,
             corner_radius=15,
             fg_color="transparent",
@@ -393,7 +393,7 @@ class MainFrame(ctk.CTkFrame):
             self.settingsf,
             text="Change pfp",
             text_color=light_text,
-            # border_color=yellow_light_shade1,
+            # border_color=green_light_shade1,
             # border_width=1,
             corner_radius=15,
             fg_color=black,
@@ -439,7 +439,7 @@ class MainFrame(ctk.CTkFrame):
             self.heading_panel,
             text="⋮",
             text_color=light_text,
-            # border_color=yellow_light_shade1,
+            # border_color=green_light_shade1,
             # border_width=1,
             corner_radius=15,
             fg_color="transparent",
@@ -464,7 +464,7 @@ class MainFrame(ctk.CTkFrame):
             self.search_panel,
             text_color=light_text,
             fg_color=black_light_shade2,
-            # border_color=yellow,
+            # border_color=green,
             # border_width=1,
             placeholder_text="Search or start a new chat",
             corner_radius=12,
@@ -477,7 +477,7 @@ class MainFrame(ctk.CTkFrame):
             self.search_panel,
             text="➜",
             text_color=light_text,
-            # border_color=yellow_light_shade1,
+            # border_color=green_light_shade1,
             # border_width=1,
             corner_radius=15,
             fg_color=black,
@@ -565,7 +565,7 @@ class MainFrame(ctk.CTkFrame):
             self.msg_frame,
             text_color=light_text,
             text="📷",
-            # border_color=yellow_light_shade1,
+            # border_color=green_light_shade1,
             height=45,
             width=45,
             # border_width=1,
@@ -581,7 +581,7 @@ class MainFrame(ctk.CTkFrame):
             self.msg_frame,
             text_color=light_text,
             text="😊",
-            # border_color=yellow_light_shade1,
+            # border_color=green_light_shade1,
             height=45,
             width=45,
             # border_width=1,
@@ -598,7 +598,7 @@ class MainFrame(ctk.CTkFrame):
             height=45,
             text_color=light_text,
             fg_color=black_light_shade2,
-            # border_color=yellow_light_shade1,
+            # border_color=green_light_shade1,
             # border_width=1,
             corner_radius=12,
             font=("Segoe UI Emoji", 18),
@@ -615,7 +615,7 @@ class MainFrame(ctk.CTkFrame):
             self.msg_frame,
             text_color=light_text,
             text="➜",
-            # border_color=yellow_light_shade1,
+            # border_color=green_light_shade1,
             height=45,
             width=45,
             # border_width=1,
@@ -755,7 +755,7 @@ class MainFrame(ctk.CTkFrame):
         btn = ctk.CTkButton(
             self.chat_list,
             text=uname,
-            # border_color=yellow_light_shade1,
+            # border_color=green_light_shade1,
             height=45,
             # border_width=1,
             corner_radius=15,
@@ -788,7 +788,7 @@ class MainFrame(ctk.CTkFrame):
             btn = ctk.CTkButton(
                 self.chat_list,
                 text=chat["uname"],
-                # border_color=yellow_light_shade1,
+                # border_color=green_light_shade1,
                 # border_width=1,
                 corner_radius=15,
                 fg_color=black,
@@ -1050,7 +1050,7 @@ class EmojiPanel(ctk.CTkToplevel):
             btn = ctk.CTkButton(
                 scroll,
                 text=symbol,
-                # border_color=yellow_light_shade1,
+                # border_color=green_light_shade1,
                 height=45,
                 width=45,
                 # border_width=1,
